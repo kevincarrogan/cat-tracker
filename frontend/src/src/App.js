@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
 
-
-const getMessage = (payload) => JSON.parse(payload.data).message;
+import Cat from "./Cat";
 
 
 const App = () => {
-  const [message, setMessage] = useState("");
+  const [locations, setLocations] = useState("");
   useEffect(() => {
     const evtSource = new EventSource("http://localhost:3010/sse");
     evtSource.addEventListener("message", (payload) => {
-      setMessage(getMessage(payload));
+      const locations = JSON.parse(payload.data)
+      setLocations(locations);
     });
   }, []);
-  return <div>{message}</div>
+  return (<div>{
+    locations.map(({name, latlong}) => <Cat name={name} latlong={latlong} />)
+  }</div>);
 };
 
 export default App;
