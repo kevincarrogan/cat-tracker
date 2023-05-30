@@ -8,6 +8,8 @@ services:
       - ./backend/src:/usr/src/app
   frontend:
     build: ./frontend
+    environment:
+      - WDS_SOCKET_PORT=3020
     ports:
       - 3020:3000
     volumes:
