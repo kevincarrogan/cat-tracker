@@ -1,6 +1,7 @@
-const tractive = require('tractive');
-const express = require('express');
-const cors = require('cors');
+import tractive from 'tractive';
+import express from 'express';
+import cors from 'cors';
+
 const app = express();
 
 app.use(cors());
@@ -25,15 +26,12 @@ app.get('/sse', (req, res) => {
   }, 5000);
 });
 
-tractive.connect(process.env.TRACTIVE_ACCOUNT_EMAIL, process.env.TRACTIVE_ACCOUNT_PASSWORD)
-  .then(connected => {
-    if (!connected) {
-      throw "Could not connect to tractive";
-    }
-    console.log(`Connected to tractive`);
-  })
-  .then(() => {
-    app.listen(3000, () => {
-      console.log('Server listening on port 3000');
-    });
-  });
+const connected = await tractive.connect(process.env.TRACTIVE_ACCOUNT_EMAIL, process.env.TRACTIVE_ACCOUNT_PASSWORD);
+if (!connected) {
+  throw "Could not connect to tractive";
+}
+console.log(`Connected to tractive`);
+
+app.listen(3000, () => {
+  console.log('Server listening on port 3000');
+});
