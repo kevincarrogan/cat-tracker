@@ -6,6 +6,29 @@ const app = express();
 
 app.use(cors());
 
+const getPets = async () => {
+  let pets = await tractive.getPets();
+  return JSON.parse(pets);
+};
+
+const getPetLocation = async (petID) => {
+  const pet = await tractive.getPet(petID);
+  const {device_id, details: {name}} = pet;
+  const {latlong} = await tractive.getTrackerLocation(device_id);
+
+  return [name, latlong];
+};
+
+const getLocations = async () => {
+  const pets = await getPets();
+  const locations = [];
+  for (const {_id: petID} of pets) {
+    const [name, latlong] = await getPetLocation(petID);
+    locations.push({name, latlong});
+  }
+  return locations;
+};
+
 app.get('/sse', (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
@@ -13,15 +36,7 @@ app.get('/sse', (req, res) => {
   res.setHeader('Transfer-Encoding', 'chunked');
 
   setInterval(async () => {
-    let pets = await tractive.getPets();
-    pets = JSON.parse(pets);
-    const locations = [];
-    for (const {_id: petId} of pets) {
-      const pet = await tractive.getPet(petId);
-      const {device_id, details: {name}} = pet;
-      const {latlong} = await tractive.getTrackerLocation(device_id);
-      locations.push({name, latlong});
-    }
+    const locations = await getLocations();
     res.write(`data: ${JSON.stringify(locations)}\n\n`);
   }, 5000);
 });
