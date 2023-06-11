@@ -4,7 +4,7 @@ import Cat from "./Cat";
 
 
 const App = () => {
-  const [locations, setLocations] = useState("");
+  const [locations, setLocations] = useState([]);
   useEffect(() => {
     const evtSource = new EventSource("http://localhost:3010/sse");
     evtSource.addEventListener("message", (payload) => {
