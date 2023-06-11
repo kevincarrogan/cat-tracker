@@ -13,7 +13,7 @@ const App = () => {
     });
   }, []);
   return (<div>{
-    locations.map(({name, latlong}) => <Cat name={name} latlong={latlong} />)
+    locations.map(({name, latlong}) => <Cat key={name} name={name} latlong={latlong} />)
   }</div>);
 };
 
